@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rakhi's Homemade</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FF6B35'/%3E%3Ctext y='46' x='32' text-anchor='middle' font-size='38'%3E🧁%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ===== APP SHELL ===== -->
+<div id="app">
+
+  <!-- TOP HEADER -->
+  <header class="top-header" id="topHeader">
+    <div class="header-left">
+      <div class="brand">
+        <span class="brand-icon">🧁</span>
+        <div class="brand-text">
+          <span class="brand-name">Rakhi's Homemade</span>
+          <span class="brand-tagline">Bakery Manager</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" id="themeToggle" title="Toggle theme">
+        <i class="fa-solid fa-moon" id="themeIcon"></i>
+      </button>
+      <button class="icon-btn" id="backupBtn" title="Download backup">
+        <i class="fa-solid fa-cloud-arrow-down"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ===== DASHBOARD ===== -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <span class="page-date" id="dashDate"></span>
+      </div>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" data-range="today">Today</button>
+        <button class="filter-btn" data-range="week">7 Days</button>
+        <button class="filter-btn" data-range="month">Month</button>
+        <button class="filter-btn" data-range="all">All Time</button>
+      </div>
+
+      <div class="summary-grid" id="dashSummary">
+        <div class="summary-card green">
+          <div class="summary-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Revenue</span>
+            <span class="summary-value" id="dashRevenue">₹0</span>
+          </div>
+        </div>
+        <div class="summary-card orange">
+          <div class="summary-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Purchases</span>
+            <span class="summary-value" id="dashPurchases">₹0</span>
+          </div>
+        </div>
+        <div class="summary-card blue">
+          <div class="summary-icon"><i class="fa-solid fa-box-open"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Items Sold</span>
+            <span class="summary-value" id="dashItemsSold">0</span>
+          </div>
+        </div>
+        <div class="summary-card purple">
+          <div class="summary-icon"><i class="fa-solid fa-receipt"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Sales Count</span>
+            <span class="summary-value" id="dashSalesCount">0</span>
+          </div>
+        </div>
+        <div class="summary-card teal">
+          <div class="summary-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Est. Profit</span>
+            <span class="summary-value" id="dashProfit">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Revenue Trend</h3>
+          <canvas id="chartRevenue"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Purchase Trend</h3>
+          <canvas id="chartPurchases"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Product-wise Sales</h3>
+          <canvas id="chartProducts"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Expense Breakdown</h3>
+          <canvas id="chartExpenses"></canvas>
+        </div>
+        <div class="chart-card full-width">
+          <h3>Monthly Comparison</h3>
+          <canvas id="chartMonthly"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== RAW MATERIALS ===== -->
+    <section class="page" id="page-materials">
+      <div class="page-header">
+        <h1>Raw Materials</h1>
+        <button class="btn-primary sm" id="addMaterialBtn"><i class="fa-solid fa-plus"></i> Add</button>
+      </div>
+
+      <div class="search-bar sticky-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="materialSearch" placeholder="Search ingredients & packaging…" />
+      </div>
+
+      <div class="category-scroll" id="materialCategories"></div>
+
+      <div class="cart-fab" id="cartFab" style="display:none">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="cart-count" id="cartCount">0</span>
+        <span class="cart-label">View Cart</span>
+      </div>
+
+      <div class="materials-grid" id="materialsGrid"></div>
+    </section>
+
+    <!-- ===== PRODUCTS ===== -->
+    <section class="page" id="page-products">
+      <div class="page-header">
+        <h1>Products</h1>
+      </div>
+
+      <div class="search-bar sticky-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="productSearch" placeholder="Search products…" />
+      </div>
+
+      <div class="category-scroll" id="productCategories"></div>
+
+      <div class="products-grid" id="productsGrid"></div>
+    </section>
+
+    <!-- ===== SALES ===== -->
+    <section class="page" id="page-sales">
+      <div class="page-header">
+        <h1>Sales</h1>
+        <button class="btn-primary sm" id="newSaleBtn"><i class="fa-solid fa-plus"></i> New Sale</button>
+      </div>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" data-range="today" data-ctx="sales">Today</button>
+        <button class="filter-btn" data-range="week" data-ctx="sales">7 Days</button>
+        <button class="filter-btn" data-range="month" data-ctx="sales">Month</button>
+        <button class="filter-btn" data-range="all" data-ctx="sales">All</button>
+      </div>
+
+      <div class="summary-grid compact" id="salesSummary">
+        <div class="summary-card green">
+          <div class="summary-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Revenue</span>
+            <span class="summary-value" id="salesRevenue">₹0</span>
+          </div>
+        </div>
+        <div class="summary-card blue">
+          <div class="summary-icon"><i class="fa-solid fa-box-open"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Items Sold</span>
+            <span class="summary-value" id="salesItemsSold">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Recent Sales</div>
+      <div id="salesList" class="transaction-list"></div>
+    </section>
+
+    <!-- ===== FINANCE ===== -->
+    <section class="page" id="page-finance">
+      <div class="page-header">
+        <h1>Finance</h1>
+      </div>
+
+      <div class="filter-bar scrollable" id="financeFilters">
+        <button class="filter-btn active" data-range="today" data-ctx="finance">Today</button>
+        <button class="filter-btn" data-range="yesterday" data-ctx="finance">Yesterday</button>
+        <button class="filter-btn" data-range="week" data-ctx="finance">7 Days</button>
+        <button class="filter-btn" data-range="month" data-ctx="finance">This Month</button>
+        <button class="filter-btn" data-range="lastmonth" data-ctx="finance">Last Month</button>
+        <button class="filter-btn" data-range="quarter" data-ctx="finance">Quarterly</button>
+        <button class="filter-btn" data-range="year" data-ctx="finance">Yearly</button>
+        <button class="filter-btn" data-range="custom" data-ctx="finance">Custom</button>
+      </div>
+
+      <div class="date-range-picker" id="customDatePicker" style="display:none">
+        <input type="date" id="customFrom" />
+        <span>to</span>
+        <input type="date" id="customTo" />
+        <button class="btn-primary sm" id="applyCustomDate">Apply</button>
+      </div>
+
+      <div class="summary-grid" id="financeSummary">
+        <div class="summary-card green">
+          <div class="summary-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Revenue</span>
+            <span class="summary-value" id="finRevenue">₹0</span>
+          </div>
+        </div>
+        <div class="summary-card orange">
+          <div class="summary-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Raw Material Exp.</span>
+            <span class="summary-value" id="finExpenses">₹0</span>
+          </div>
+        </div>
+        <div class="summary-card blue">
+          <div class="summary-icon"><i class="fa-solid fa-box-open"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Products Sold</span>
+            <span class="summary-value" id="finProductsSold">0</span>
+          </div>
+        </div>
+        <div class="summary-card purple">
+          <div class="summary-icon"><i class="fa-solid fa-receipt"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Purchase Count</span>
+            <span class="summary-value" id="finPurchaseCount">0</span>
+          </div>
+        </div>
+        <div class="summary-card teal">
+          <div class="summary-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="summary-body">
+            <span class="summary-label">Est. Profit</span>
+            <span class="summary-value" id="finProfit">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Revenue Trend</h3>
+          <canvas id="finChartRevenue"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Purchase Trend</h3>
+          <canvas id="finChartPurchases"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Expense Breakdown</h3>
+          <canvas id="finChartExpenses"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Product-wise Sales</h3>
+          <canvas id="finChartProducts"></canvas>
+        </div>
+        <div class="chart-card full-width">
+          <h3>Monthly Revenue Comparison</h3>
+          <canvas id="finChartMonthly"></canvas>
+        </div>
+      </div>
+
+      <div class="section-title">Purchase History</div>
+      <div id="purchaseHistoryList" class="transaction-list"></div>
+    </section>
+
+    <!-- ===== SETTINGS ===== -->
+    <section class="page" id="page-settings">
+      <div class="page-header">
+        <h1>Settings</h1>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Appearance</div>
+        <div class="settings-row">
+          <div class="settings-info">
+            <i class="fa-solid fa-circle-half-stroke"></i>
+            <div>
+              <span class="settings-name">Theme</span>
+              <span class="settings-desc">Switch between light and dark mode</span>
+            </div>
+          </div>
+          <div class="theme-toggle-row">
+            <span>Light</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="themeToggleSettings" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span>Dark</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Data Management</div>
+        <button class="settings-btn" id="downloadBackupBtn">
+          <i class="fa-solid fa-cloud-arrow-down"></i>
+          <div>
+            <span class="settings-name">Download Backup</span>
+            <span class="settings-desc">Export all data as JSON</span>
+          </div>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <button class="settings-btn" id="uploadBackupBtn">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <div>
+            <span class="settings-name">Restore Backup</span>
+            <span class="settings-desc">Import from a JSON backup file</span>
+          </div>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <input type="file" id="restoreFileInput" accept=".json" style="display:none" />
+        <button class="settings-btn" id="downloadLedgerBtn">
+          <i class="fa-solid fa-file-lines"></i>
+          <div>
+            <span class="settings-name">Download Ledger</span>
+            <span class="settings-desc">Export chronological business ledger as .txt</span>
+          </div>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <button class="settings-btn danger" id="clearDataBtn">
+          <i class="fa-solid fa-trash"></i>
+          <div>
+            <span class="settings-name">Clear All Data</span>
+            <span class="settings-desc">Permanently delete all records</span>
+          </div>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">About</div>
+        <div class="about-card">
+          <span class="about-icon">🧁</span>
+          <div>
+            <strong>Rakhi's Homemade</strong>
+            <p>Bakery Business Management System</p>
+            <small>v1.0 · Local Storage · Works Offline</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" data-page="dashboard">
+      <i class="fa-solid fa-chart-pie"></i>
+      <span>Dashboard</span>
+    </button>
+    <button class="nav-item" data-page="materials">
+      <i class="fa-solid fa-basket-shopping"></i>
+      <span>Materials</span>
+    </button>
+    <button class="nav-item" data-page="products">
+      <i class="fa-solid fa-cupcake"></i>
+      <span>Products</span>
+    </button>
+    <button class="nav-item" data-page="sales">
+      <i class="fa-solid fa-bag-shopping"></i>
+      <span>Sales</span>
+    </button>
+    <button class="nav-item" data-page="finance">
+      <i class="fa-solid fa-wallet"></i>
+      <span>Finance</span>
+    </button>
+    <button class="nav-item" data-page="settings">
+      <i class="fa-solid fa-gear"></i>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Purchase Cart Modal -->
+<div class="modal-overlay" id="cartModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Purchase Cart</h2>
+      <button class="modal-close" id="closeCartModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="cartItems"></div>
+    <div class="modal-footer">
+      <div class="cart-total">
+        <span>Total</span>
+        <strong id="cartTotal">₹0.00</strong>
+      </div>
+      <button class="btn-primary full" id="checkoutBtn">Checkout & Save Purchase</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Material Modal -->
+<div class="modal-overlay" id="addMaterialModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Add Custom Material</h2>
+      <button class="modal-close" id="closeAddMaterialModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Material Name *</label>
+        <input type="text" id="newMatName" placeholder="e.g. Almond Flour" />
+      </div>
+      <div class="form-group">
+        <label>Category *</label>
+        <select id="newMatCategory">
+          <option value="Packaging Materials">Packaging Materials</option>
+          <option value="Dairy Products">Dairy Products</option>
+          <option value="Baking Ingredients">Baking Ingredients</option>
+          <option value="Dry Fruits">Dry Fruits</option>
+          <option value="Chocolate & Baking Products">Chocolate & Baking Products</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Unit *</label>
+        <input type="text" id="newMatUnit" placeholder="e.g. kg, pcs, litre" />
+      </div>
+      <div class="form-group">
+        <label>Emoji / Icon</label>
+        <input type="text" id="newMatEmoji" placeholder="e.g. 🥛" maxlength="4" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary full" id="saveNewMaterial">Add Material</button>
+    </div>
+  </div>
+</div>
+
+<!-- Purchase Entry Modal -->
+<div class="modal-overlay" id="purchaseModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="purchaseModalTitle">Add to Cart</h2>
+      <button class="modal-close" id="closePurchaseModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="material-preview" id="purchaseMatPreview"></div>
+      <div class="form-group">
+        <label>Quantity *</label>
+        <input type="number" id="purchaseQty" placeholder="0" min="1" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label>Price per unit (₹) *</label>
+        <input type="number" id="purchasePrice" placeholder="0.00" min="0" step="0.01" />
+      </div>
+      <div class="purchase-total-preview">
+        <span>Subtotal</span>
+        <strong id="purchaseSubtotal">₹0.00</strong>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary full" id="addToCartBtn">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Sale Modal -->
+<div class="modal-overlay" id="saleModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Record Sale</h2>
+      <button class="modal-close" id="closeSaleModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Category</label>
+        <select id="saleCategory" onchange="app.onSaleCategoryChange()">
+          <option value="">Select category…</option>
+          <option value="Healthy Cakes">Healthy Cakes</option>
+          <option value="Cookies">Cookies</option>
+          <option value="Cupcakes & Muffins">Cupcakes & Muffins</option>
+          <option value="Brownies">Brownies</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Product</label>
+        <select id="saleProduct" onchange="app.onSaleProductChange()">
+          <option value="">Select product…</option>
+        </select>
+      </div>
+      <div class="form-group" id="saleSizeGroup" style="display:none">
+        <label>Size</label>
+        <select id="saleSize" onchange="app.onSaleSizeChange()">
+          <option value="500gm">500 gm</option>
+          <option value="1kg">1 kg</option>
+          <option value="2kg">2 kg</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Selling Price (₹) *</label>
+        <input type="number" id="salePrice" placeholder="0.00" min="0" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label>Quantity *</label>
+        <input type="number" id="saleQty" placeholder="1" min="1" value="1" />
+      </div>
+      <div class="purchase-total-preview">
+        <span>Total Revenue</span>
+        <strong id="saleTotalPreview">₹0.00</strong>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary full" id="saveSaleBtn">Record Sale</button>
+    </div>
+  </div>
+</div>
+
+<!-- Product Detail Modal -->
+<div class="modal-overlay" id="productDetailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="productDetailTitle">Product</h2>
+      <button class="modal-close" id="closeProductDetailModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="productDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn-primary full" id="recordSaleFromDetail">Record a Sale</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal small">
+    <div class="modal-header">
+      <h2 id="confirmTitle">Confirm</h2>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMessage"></p>
+    </div>
+    <div class="modal-footer two-col">
+      <button class="btn-outline" id="confirmCancel">Cancel</button>
+      <button class="btn-danger" id="confirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
