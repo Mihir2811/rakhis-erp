@@ -9,41 +9,41 @@
 
 const DEFAULT_MATERIALS = [
   // Packaging
-  { id:'m1',  name:'Cake Box – 500 gm',        category:'Packaging Materials',           unit:'pcs',   emoji:'📦' },
-  { id:'m2',  name:'Cake Box – 1 kg',           category:'Packaging Materials',           unit:'pcs',   emoji:'📦' },
-  { id:'m3',  name:'Cake Box – 2 kg',           category:'Packaging Materials',           unit:'pcs',   emoji:'📦' },
-  { id:'m4',  name:'Large Bag',                 category:'Packaging Materials',           unit:'pcs',   emoji:'🛍️' },
-  { id:'m5',  name:'Extra Large Bag',           category:'Packaging Materials',           unit:'pcs',   emoji:'🛍️' },
-  { id:'m6',  name:'Bake & Serve Box – 250 gm', category:'Packaging Materials',           unit:'pcs',   emoji:'📦' },
-  { id:'m7',  name:'Bake & Serve Box – 500 gm', category:'Packaging Materials',           unit:'pcs',   emoji:'📦' },
-  { id:'m8',  name:'Cookie Box – 250 gm',       category:'Packaging Materials',           unit:'pcs',   emoji:'🍪' },
-  { id:'m9',  name:'Cookie Box – 500 gm',       category:'Packaging Materials',           unit:'pcs',   emoji:'🍪' },
-  { id:'m10', name:'Brownie Box – 250 gm',      category:'Packaging Materials',           unit:'pcs',   emoji:'🍫' },
-  { id:'m11', name:'Brownie Box – 500 gm',      category:'Packaging Materials',           unit:'pcs',   emoji:'🍫' },
-  { id:'m12', name:'Logo Stickers',             category:'Packaging Materials',           unit:'pcs',   emoji:'🏷️' },
+  { id:'m1',  name:'Cake Box – 500 gm',        category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Cake Box.jfif' },
+  { id:'m2',  name:'Cake Box – 1 kg',           category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Cake Box.jfif' },
+  { id:'m3',  name:'Cake Box – 2 kg',           category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Cake Box Large.jfif' },
+  { id:'m4',  name:'Large Bag',                 category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Large Carry Bag.jfif' },
+  { id:'m5',  name:'Extra Large Bag',           category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Extra Large Bag.jfif' },
+  { id:'m6',  name:'Bake & Serve Box – 250 gm', category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Bake & Serve Box.jfif' },
+  { id:'m7',  name:'Bake & Serve Box – 500 gm', category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Bake & Serve Box.jfif' },
+  { id:'m8',  name:'Cookie Box – 250 gm',       category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Cookie Box.jfif' },
+  { id:'m9',  name:'Cookie Box – 500 gm',       category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Cookie Box.jfif' },
+  { id:'m10', name:'Brownie Box – 250 gm',      category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Brownie Box.webp' },
+  { id:'m11', name:'Brownie Box – 500 gm',      category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Brownie Box.webp' },
+  { id:'m12', name:'Logo Stickers',             category:'Packaging Materials',           unit:'pcs',   img:'Product Photos/Stickers.jpg' },
   // Dairy
-  { id:'m13', name:'Mithai Mate – 400 gm',      category:'Dairy Products',                unit:'tin',   emoji:'🥛' },
-  { id:'m14', name:'Mithai Mate – 7 Litre',     category:'Dairy Products',                unit:'can',   emoji:'🥛' },
-  { id:'m15', name:'Butter – 500 gm',           category:'Dairy Products',                unit:'pack',  emoji:'🧈' },
-  { id:'m16', name:'Amul Fresh Cream – 1 Litre',category:'Dairy Products',                unit:'litre', emoji:'🥛' },
+  { id:'m13', name:'Mithai Mate – 400 gm',      category:'Dairy Products',                unit:'tin',   img:'Product Photos/Mithai Mate.jpg' },
+  { id:'m14', name:'Mithai Mate – 7 Litre',     category:'Dairy Products',                unit:'can',   img:'Product Photos/Mithai Mate.jpg' },
+  { id:'m15', name:'Butter – 500 gm',           category:'Dairy Products',                unit:'pack',  img:'Product Photos/Delicious Butter.jpg' },
+  { id:'m16', name:'Amul Fresh Cream – 1 Litre',category:'Dairy Products',                unit:'litre', img:'Product Photos/Amul Fresh Cream.jpeg' },
   // Baking
-  { id:'m17', name:'Maida – 1 kg',              category:'Baking Ingredients',            unit:'kg',    emoji:'🌾' },
-  { id:'m18', name:'Vanilla Essence – 1 Litre', category:'Baking Ingredients',            unit:'litre', emoji:'🍶' },
-  { id:'m19', name:'Baking Powder',             category:'Baking Ingredients',            unit:'gm',    emoji:'🧂' },
-  { id:'m20', name:'Baking Soda',               category:'Baking Ingredients',            unit:'gm',    emoji:'🧂' },
+  { id:'m17', name:'Maida – 1 kg',              category:'Baking Ingredients',            unit:'kg',    img:'Product Photos/Maida.jpg' },
+  { id:'m18', name:'Vanilla Essence – 1 Litre', category:'Baking Ingredients',            unit:'litre', img:'Product Photos/Vanilla Essence.jpg' },
+  { id:'m19', name:'Baking Powder',             category:'Baking Ingredients',            unit:'gm',    img:'Product Photos/Baking Soda.jpg' },
+  { id:'m20', name:'Baking Soda',               category:'Baking Ingredients',            unit:'gm',    img:'Product Photos/Baking Soda.jpg' },
   // Dry Fruits
-  { id:'m21', name:'Dates',                     category:'Dry Fruits',                    unit:'kg',    emoji:'🌴' },
-  { id:'m22', name:'Walnut',                    category:'Dry Fruits',                    unit:'kg',    emoji:'🌰' },
-  { id:'m23', name:'Almond',                    category:'Dry Fruits',                    unit:'kg',    emoji:'🥜' },
-  { id:'m24', name:'Cashew Nut',                category:'Dry Fruits',                    unit:'kg',    emoji:'🥜' },
-  { id:'m25', name:'Pistachio',                 category:'Dry Fruits',                    unit:'kg',    emoji:'🟢' },
+  { id:'m21', name:'Dates',                     category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Dates.jfif' },
+  { id:'m22', name:'Walnut',                    category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Walnut.jfif' },
+  { id:'m23', name:'Almond',                    category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Almond.jfif' },
+  { id:'m24', name:'Cashew Nut',                category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Cashew Nut.jfif' },
+  { id:'m25', name:'Pistachio',                 category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Almond.jfif' },
   // Chocolate
-  { id:'m26', name:'Morde Chocolate – 500 gm',  category:'Chocolate & Baking Products',   unit:'pack',  emoji:'🍫' },
-  { id:'m27', name:'Chocolate Chips – 1 kg',    category:'Chocolate & Baking Products',   unit:'kg',    emoji:'🍫' },
-  { id:'m28', name:'Nutella',                   category:'Chocolate & Baking Products',   unit:'jar',   emoji:'🫙' },
-  { id:'m29', name:'Hazelnut Spread',           category:'Chocolate & Baking Products',   unit:'jar',   emoji:'🫙' },
-  { id:'m30', name:'Biscoff Spread',            category:'Chocolate & Baking Products',   unit:'jar',   emoji:'🫙' },
-  { id:'m31', name:'Biscuits',                  category:'Chocolate & Baking Products',   unit:'pack',  emoji:'🍪' },
+  { id:'m26', name:'Morde Chocolate – 500 gm',  category:'Chocolate & Baking Products',   unit:'pack',  img:'Product Photos/CP16 Chocolate.jpg' },
+  { id:'m27', name:'Chocolate Chips – 1 kg',    category:'Chocolate & Baking Products',   unit:'kg',    img:'Product Photos/Chocolate Chips.jfif' },
+  { id:'m28', name:'Nutella',                   category:'Chocolate & Baking Products',   unit:'jar',   img:'Product Photos/Nutella.jfif' },
+  { id:'m29', name:'Hazelnut Spread',           category:'Chocolate & Baking Products',   unit:'jar',   img:'Product Photos/Hazelnut Spread.jfif' },
+  { id:'m30', name:'Biscoff Spread',            category:'Chocolate & Baking Products',   unit:'jar',   img:'Product Photos/Biscoff Spread.jfif' },
+  { id:'m31', name:'Biscuits',                  category:'Chocolate & Baking Products',   unit:'pack',  img:'Product Photos/Biscuits.jfif' },
 ];
 
 const DEFAULT_PRODUCTS = [
@@ -130,7 +130,11 @@ const app = (() => {
   }
 
   function loadFromStorage() {
-    state.materials  = LS.get('rh_materials')  || JSON.parse(JSON.stringify(DEFAULT_MATERIALS));
+    const storedMats = LS.get('rh_materials');
+    // Migrate: re-seed if stored data still uses old emoji field instead of img
+    state.materials = (storedMats && storedMats[0] && !storedMats[0].emoji)
+      ? storedMats
+      : JSON.parse(JSON.stringify(DEFAULT_MATERIALS));
     state.products   = LS.get('rh_products')   || JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
     state.purchases  = LS.get('rh_purchases')  || [];
     state.sales      = LS.get('rh_sales')      || [];
@@ -351,7 +355,7 @@ const app = (() => {
 
     grid.innerHTML = mats.map(m => {
       const stock = getPurchasedQty(m.id);
-      const imgSrc = m.image || `images/${m.id}.jpg`;
+      const imgSrc = m.img || '';
       return `
       <div class="material-card" data-id="${m.id}">
         <div class="mat-img-wrap">
@@ -379,7 +383,7 @@ const app = (() => {
     if (!mat) return;
     state.currentPurchaseMat = mat;
     document.getElementById('purchaseModalTitle').textContent = `Add to Cart`;
-    const imgSrc2 = mat.image || `images/${mat.id}.jpg`;
+    const imgSrc2 = mat.img || '';
     document.getElementById('purchaseMatPreview').innerHTML = `
       <div class="mat-img-wrap sm">
         <img class="mat-img" src="${imgSrc2}" alt="${mat.name}" onerror="this.parentElement.innerHTML='<div class=mat-img-placeholder><i class=\\'fa-solid fa-image\\'></i></div>'" />
@@ -412,7 +416,7 @@ const app = (() => {
     if (existing) {
       existing.qty += qty;
     } else {
-      state.cart.push({ matId: mat.id, name: mat.name, emoji: mat.emoji, unit: mat.unit, qty, price });
+      state.cart.push({ matId: mat.id, name: mat.name, img: mat.img, unit: mat.unit, qty, price });
     }
     closeModal('purchaseModal');
     updateCartFab();
@@ -446,7 +450,7 @@ const app = (() => {
     container.innerHTML = state.cart.map((item, idx) => {
       const sub = item.qty * item.price;
       total += sub;
-      const imgSrc3 = item.image || `images/${item.matId}.jpg`;
+      const imgSrc3 = item.img || '';
       return `
       <div class="cart-item">
         <div class="mat-img-wrap xs">
@@ -475,7 +479,7 @@ const app = (() => {
     const purchase = {
       id: `pur_${Date.now()}`,
       date: new Date().toISOString(),
-      items: state.cart.map(c => ({ matId: c.matId, name: c.name, emoji: c.emoji, qty: c.qty, price: c.price, unit: c.unit })),
+      items: state.cart.map(c => ({ matId: c.matId, name: c.name, img: c.img, qty: c.qty, price: c.price, unit: c.unit })),
       total
     };
     state.purchases.push(purchase);

@@ -880,3 +880,42 @@ canvas { max-width: 100%; }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+/* ─── Material Images ─────────────────────────────────────────────── */
+.mat-img-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-2, #f5f5f5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.mat-img-wrap.sm { width: 56px; aspect-ratio: 1; margin-bottom: 0; flex-shrink: 0; }
+.mat-img-wrap.xs { width: 40px; aspect-ratio: 1; margin-bottom: 0; flex-shrink: 0; }
+
+.mat-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mat-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3, #aaa);
+  font-size: 1.6rem;
+}
+.mat-img-placeholder.xs { font-size: 1rem; }
+
+.material-preview-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
