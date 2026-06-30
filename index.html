@@ -47,9 +47,9 @@
       </div>
 
       <div class="filter-bar">
-        <button class="filter-btn active" data-range="today">Today</button>
+        <button class="filter-btn" data-range="today">Today</button>
         <button class="filter-btn" data-range="week">7 Days</button>
-        <button class="filter-btn" data-range="month">Month</button>
+        <button class="filter-btn active" data-range="month">Month</button>
         <button class="filter-btn" data-range="all">All Time</button>
       </div>
 
@@ -113,6 +113,12 @@
           <canvas id="chartMonthly"></canvas>
         </div>
       </div>
+
+      <div class="section-title">Recent Sales</div>
+      <div id="dashSalesList" class="transaction-list"></div>
+
+      <div class="section-title">Purchase History</div>
+      <div id="dashPurchaseHistoryList" class="transaction-list"></div>
     </section>
 
     <!-- ===== RAW MATERIALS ===== -->
@@ -138,7 +144,7 @@
       <div class="materials-grid" id="materialsGrid"></div>
     </section>
 
-    <!-- ===== PRODUCTS ===== -->
+    <!-- ===== PRODUCTS (temporarily disabled, not needed right now) =====
     <section class="page" id="page-products">
       <div class="page-header">
         <h1>Products</h1>
@@ -153,6 +159,7 @@
 
       <div class="products-grid" id="productsGrid"></div>
     </section>
+    ===== END PRODUCTS ===== -->
 
     <!-- ===== SALES ===== -->
     <section class="page" id="page-sales">
@@ -162,9 +169,9 @@
       </div>
 
       <div class="filter-bar">
-        <button class="filter-btn active" data-range="today" data-ctx="sales">Today</button>
+        <button class="filter-btn" data-range="today" data-ctx="sales">Today</button>
         <button class="filter-btn" data-range="week" data-ctx="sales">7 Days</button>
-        <button class="filter-btn" data-range="month" data-ctx="sales">Month</button>
+        <button class="filter-btn active" data-range="month" data-ctx="sales">Month</button>
         <button class="filter-btn" data-range="all" data-ctx="sales">All</button>
       </div>
 
@@ -187,6 +194,9 @@
 
       <div class="section-title">Recent Sales</div>
       <div id="salesList" class="transaction-list"></div>
+
+      <div class="section-title">Purchase History</div>
+      <div id="salesPurchaseHistoryList" class="transaction-list"></div>
     </section>
 
     <!-- ===== FINANCE ===== -->
@@ -196,10 +206,10 @@
       </div>
 
       <div class="filter-bar scrollable" id="financeFilters">
-        <button class="filter-btn active" data-range="today" data-ctx="finance">Today</button>
+        <button class="filter-btn" data-range="today" data-ctx="finance">Today</button>
         <button class="filter-btn" data-range="yesterday" data-ctx="finance">Yesterday</button>
         <button class="filter-btn" data-range="week" data-ctx="finance">7 Days</button>
-        <button class="filter-btn" data-range="month" data-ctx="finance">This Month</button>
+        <button class="filter-btn active" data-range="month" data-ctx="finance">This Month</button>
         <button class="filter-btn" data-range="lastmonth" data-ctx="finance">Last Month</button>
         <button class="filter-btn" data-range="quarter" data-ctx="finance">Quarterly</button>
         <button class="filter-btn" data-range="year" data-ctx="finance">Yearly</button>
@@ -274,6 +284,9 @@
         </div>
       </div>
 
+      <div class="section-title">Recent Sales</div>
+      <div id="financeSalesList" class="transaction-list"></div>
+
       <div class="section-title">Purchase History</div>
       <div id="purchaseHistoryList" class="transaction-list"></div>
     </section>
@@ -332,6 +345,14 @@
           </div>
           <i class="fa-solid fa-chevron-right"></i>
         </button>
+        <button class="settings-btn" id="exportExcelBtn">
+          <i class="fa-solid fa-file-excel"></i>
+          <div>
+            <span class="settings-name">Export to Excel</span>
+            <span class="settings-desc">Export sales & purchases as .xlsx (CSV)</span>
+          </div>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
         <button class="settings-btn danger" id="clearDataBtn">
           <i class="fa-solid fa-trash"></i>
           <div>
@@ -367,10 +388,10 @@
       <i class="fa-solid fa-basket-shopping"></i>
       <span>Materials</span>
     </button>
-    <button class="nav-item" data-page="products">
+    <!-- <button class="nav-item" data-page="products">
       <i class="fa-solid fa-box-open"></i>
       <span>Products</span>
-    </button>
+    </button> -->
     <button class="nav-item" data-page="sales">
       <i class="fa-solid fa-bag-shopping"></i>
       <span>Sales</span>
@@ -520,6 +541,38 @@
     </div>
     <div class="modal-footer">
       <button class="btn-primary full" id="saveSaleBtn">Record Sale</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Sale Modal -->
+<div class="modal-overlay" id="editSaleModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Edit Sale</h2>
+      <button class="modal-close" id="closeEditSaleModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Product</label>
+        <input type="text" id="editSaleProductName" disabled />
+      </div>
+      <div class="form-group">
+        <label>Selling Price (₹) *</label>
+        <input type="number" id="editSalePrice" placeholder="0.00" min="0" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label>Quantity *</label>
+        <input type="number" id="editSaleQty" placeholder="1" min="1" />
+      </div>
+      <div class="purchase-total-preview">
+        <span>Total Revenue</span>
+        <strong id="editSaleTotalPreview">₹0.00</strong>
+      </div>
+    </div>
+    <div class="modal-footer two-col">
+      <button class="btn-outline" id="deleteSaleBtn">Delete</button>
+      <button class="btn-primary" id="saveEditSaleBtn">Save Changes</button>
     </div>
   </div>
 </div>

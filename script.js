@@ -101,9 +101,9 @@ const app = (() => {
     activePage: 'dashboard',
     activeMaterialCategory: 'All',
     activeProductCategory: 'All',
-    dashRange: 'today',
-    salesRange: 'today',
-    financeRange: 'today',
+    dashRange: 'month',
+    salesRange: 'month',
+    financeRange: 'month',
     customFrom: null,
     customTo: null,
     theme: 'light',
@@ -121,7 +121,7 @@ const app = (() => {
     setupNav();
     setupEventListeners();
     renderMaterials();
-    renderProducts();
+    // renderProducts(); // Products section temporarily disabled
     showPage('dashboard');
     updateDashboard();
     updateSales();
@@ -251,6 +251,13 @@ const app = (() => {
     document.getElementById('saleQty').addEventListener('input', updateSaleTotalPreview);
     document.getElementById('saveSaleBtn').addEventListener('click', recordSale);
 
+    // Edit sale modal
+    document.getElementById('closeEditSaleModal').addEventListener('click', () => closeModal('editSaleModal'));
+    document.getElementById('editSalePrice').addEventListener('input', updateEditSaleTotalPreview);
+    document.getElementById('editSaleQty').addEventListener('input', updateEditSaleTotalPreview);
+    document.getElementById('saveEditSaleBtn').addEventListener('click', saveEditSale);
+    document.getElementById('deleteSaleBtn').addEventListener('click', deleteEditingSale);
+
     // Product detail
     document.getElementById('closeProductDetailModal').addEventListener('click', () => closeModal('productDetailModal'));
     document.getElementById('recordSaleFromDetail').addEventListener('click', () => {
@@ -276,10 +283,13 @@ const app = (() => {
       renderMaterialCards(e.target.value.toLowerCase());
     });
 
-    // Product search
-    document.getElementById('productSearch').addEventListener('input', e => {
-      renderProductCards(e.target.value.toLowerCase());
-    });
+    // Product search (disabled — Products section commented out)
+    const productSearchEl = document.getElementById('productSearch');
+    if (productSearchEl) {
+      productSearchEl.addEventListener('input', e => {
+        renderProductCards(e.target.value.toLowerCase());
+      });
+    }
 
     // Backup / Settings
     document.getElementById('backupBtn').addEventListener('click', downloadBackup);
@@ -287,6 +297,7 @@ const app = (() => {
     document.getElementById('uploadBackupBtn').addEventListener('click', () => document.getElementById('restoreFileInput').click());
     document.getElementById('restoreFileInput').addEventListener('change', restoreBackup);
     document.getElementById('downloadLedgerBtn').addEventListener('click', downloadLedger);
+    document.getElementById('exportExcelBtn').addEventListener('click', exportExcel);
     document.getElementById('clearDataBtn').addEventListener('click', () => {
       confirm('Clear All Data', 'This will permanently delete all purchases, sales and settings. Are you sure?', () => {
         localStorage.clear();
@@ -667,6 +678,62 @@ const app = (() => {
     if (state.activePage === 'finance') updateFinance();
   }
 
+  // ─── EDIT / DELETE SALE ───────────────────────────────────────────
+
+  let editingSaleId = null;
+
+  function openEditSale(saleId) {
+    const sale = state.sales.find(s => s.id === saleId);
+    if (!sale) return;
+    editingSaleId = saleId;
+    document.getElementById('editSaleProductName').value = `${sale.productName}${sale.size ? ' ('+formatSize(sale.size)+')' : ''}`;
+    document.getElementById('editSalePrice').value = sale.unitPrice;
+    document.getElementById('editSaleQty').value = sale.qty;
+    updateEditSaleTotalPreview();
+    openModal('editSaleModal');
+  }
+
+  function updateEditSaleTotalPreview() {
+    const price = parseFloat(document.getElementById('editSalePrice').value) || 0;
+    const qty = parseFloat(document.getElementById('editSaleQty').value) || 0;
+    document.getElementById('editSaleTotalPreview').textContent = `₹${(price * qty).toFixed(2)}`;
+  }
+
+  function saveEditSale() {
+    const sale = state.sales.find(s => s.id === editingSaleId);
+    if (!sale) return;
+    const unitPrice = parseFloat(document.getElementById('editSalePrice').value);
+    const qty = parseFloat(document.getElementById('editSaleQty').value);
+    if (!unitPrice || unitPrice <= 0) { showToast('Enter selling price'); return; }
+    if (!qty || qty <= 0) { showToast('Enter quantity'); return; }
+    sale.unitPrice = unitPrice;
+    sale.qty = qty;
+    sale.total = unitPrice * qty;
+    save();
+    closeModal('editSaleModal');
+    editingSaleId = null;
+    showToast('Sale updated');
+    refreshAllViews();
+  }
+
+  function deleteEditingSale() {
+    if (!editingSaleId) return;
+    confirm('Delete Sale', 'This will permanently remove this sale record. Continue?', () => {
+      state.sales = state.sales.filter(s => s.id !== editingSaleId);
+      save();
+      closeModal('editSaleModal');
+      editingSaleId = null;
+      showToast('Sale deleted');
+      refreshAllViews();
+    });
+  }
+
+  function refreshAllViews() {
+    if (state.activePage === 'sales') updateSales();
+    if (state.activePage === 'dashboard') updateDashboard();
+    if (state.activePage === 'finance') updateFinance();
+  }
+
   function updateSales() {
     const { from, to } = getDateRange(state.salesRange);
     const filtered = filterByDate(state.sales, from, to);
@@ -675,7 +742,15 @@ const app = (() => {
     document.getElementById('salesRevenue').textContent = `₹${revenue.toFixed(0)}`;
     document.getElementById('salesItemsSold').textContent = items;
 
-    const list = document.getElementById('salesList');
+    renderSalesList('salesList', filtered);
+
+    const filteredPurchases = filterByDate(state.purchases, from, to);
+    renderPurchaseHistory('salesPurchaseHistoryList', filteredPurchases);
+  }
+
+  function renderSalesList(elId, filtered) {
+    const list = document.getElementById(elId);
+    if (!list) return;
     if (!filtered.length) {
       list.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><p>No sales in this period</p></div>`;
       return;
@@ -689,6 +764,7 @@ const app = (() => {
           <div class="tx-meta">${s.category} · Qty: ${s.qty} · ${formatDateTime(s.date)}</div>
         </div>
         <span class="tx-amount credit">+₹${s.total.toFixed(0)}</span>
+        <button class="tx-edit-btn" onclick="app.openEditSale('${s.id}')" title="Edit sale"><i class="fa-solid fa-pen"></i></button>
       </div>`).join('');
   }
 
@@ -711,11 +787,13 @@ const app = (() => {
     document.getElementById('finProfit').textContent = `₹${profit.toFixed(0)}`;
 
     renderFinanceCharts(filteredSales, filteredPurchases);
-    renderPurchaseHistory(filteredPurchases);
+    renderPurchaseHistory('purchaseHistoryList', filteredPurchases);
+    renderSalesList('financeSalesList', filteredSales);
   }
 
-  function renderPurchaseHistory(purchases) {
-    const list = document.getElementById('purchaseHistoryList');
+  function renderPurchaseHistory(elId, purchases) {
+    const list = document.getElementById(elId);
+    if (!list) return;
     if (!purchases.length) {
       list.innerHTML = `<div class="empty-state"><div class="empty-icon">🛒</div><p>No purchases in this period</p></div>`;
       return;
@@ -751,6 +829,8 @@ const app = (() => {
     document.getElementById('dashProfit').textContent = `₹${profit.toFixed(0)}`;
 
     renderDashCharts(filteredSales, filteredPurchases);
+    renderSalesList('dashSalesList', filteredSales);
+    renderPurchaseHistory('dashPurchaseHistoryList', filteredPurchases);
   }
 
   // ─── CHARTS ───────────────────────────────────────────────────────
@@ -989,6 +1069,50 @@ const app = (() => {
     showToast('Ledger downloaded');
   }
 
+  function exportExcel() {
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    function tableHtml(title, headers, rows) {
+      let html = `<h3>${escapeHtml(title)}</h3><table border="1"><tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
+      rows.forEach(r => { html += `<tr>${r.map(c=>`<td>${escapeHtml(c)}</td>`).join('')}</tr>`; });
+      html += `</table><br/>`;
+      return html;
+    }
+
+    const salesRows = [...state.sales].sort((a,b)=>new Date(a.date)-new Date(b.date)).map(s => [
+      formatDateTime(s.date), s.productName, s.category, s.size ? formatSize(s.size) : '', s.qty, s.unitPrice.toFixed(2), s.total.toFixed(2)
+    ]);
+    const purchaseRows = [];
+    [...state.purchases].sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(p => {
+      p.items.forEach(i => {
+        purchaseRows.push([formatDateTime(p.date), i.name, i.unit, i.qty, i.price.toFixed(2), (i.qty*i.price).toFixed(2)]);
+      });
+    });
+
+    const totalSales = state.sales.reduce((s,x)=>s+x.total,0);
+    const totalPurchases = state.purchases.reduce((s,x)=>s+x.total,0);
+
+    let html = `<html><head><meta charset="UTF-8"></head><body>`;
+    html += tableHtml('Sales', ['Date','Product','Category','Size','Qty','Unit Price (₹)','Total (₹)'], salesRows);
+    html += tableHtml('Purchases', ['Date','Material','Unit','Qty','Unit Price (₹)','Total (₹)'], purchaseRows);
+    html += tableHtml('Summary', ['Metric','Value'], [
+      ['Total Sales Revenue', totalSales.toFixed(2)],
+      ['Total Purchase Expense', totalPurchases.toFixed(2)],
+      ['Est. Profit', (totalSales-totalPurchases).toFixed(2)],
+    ]);
+    html += `</body></html>`;
+
+    const blob = new Blob([html], { type:'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rakhis-homemade-export-${new Date().toISOString().slice(0,10)}.xls`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Excel file exported');
+  }
+
   // ─── TOAST ────────────────────────────────────────────────────────
 
   let toastTimeout;
@@ -1024,6 +1148,7 @@ const app = (() => {
     onSaleCategoryChange,
     onSaleProductChange,
     onSaleSizeChange,
+    openEditSale,
   };
 
 })();
