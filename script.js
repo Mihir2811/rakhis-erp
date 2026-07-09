@@ -30,13 +30,13 @@ const DEFAULT_MATERIALS = [
   { id:'m17', name:'Maida – 1 kg',              category:'Baking Ingredients',            unit:'kg',    img:'Product Photos/Maida.jpg' },
   { id:'m18', name:'Vanilla Essence – 1 Litre', category:'Baking Ingredients',            unit:'litre', img:'Product Photos/Vanilla Essence.jpg' },
   { id:'m19', name:'Baking Powder',             category:'Baking Ingredients',            unit:'gm',    img:'Product Photos/Baking Soda.jpg' },
-  { id:'m20', name:'Baking Soda',               category:'Baking Ingredients',            unit:'gm',    img:'Product Photos/Baking Soda.jpg' },
+  // { id:'m20', name:'Baking Soda',               category:'Baking Ingredients',            unit:'gm',    img:'Product Photos/Baking Soda.jpg' },
   // Dry Fruits
-  { id:'m21', name:'Dates',                     category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Dates.jfif' },
+  { id:'m21', name:'Dates',                     category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Dates.png' },
   { id:'m22', name:'Walnut',                    category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Walnut.jfif' },
   { id:'m23', name:'Almond',                    category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Almond.jfif' },
-  { id:'m24', name:'Cashew Nut',                category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Cashew Nut.jfif' },
-  { id:'m25', name:'Pistachio',                 category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Almond.jfif' },
+  { id:'m24', name:'Cashew Nut',                category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Cashew.jfif' },
+  { id:'m25', name:'Pistachio',                 category:'Dry Fruits',                    unit:'kg',    img:'Product Photos/Pistachio.jfif' },
   // Chocolate
   { id:'m26', name:'Morde Chocolate – 500 gm',  category:'Chocolate & Baking Products',   unit:'pack',  img:'Product Photos/CP16 Chocolate.jpg' },
   { id:'m27', name:'Chocolate Chips – 1 kg',    category:'Chocolate & Baking Products',   unit:'kg',    img:'Product Photos/Chocolate Chips.jfif' },
@@ -44,11 +44,15 @@ const DEFAULT_MATERIALS = [
   { id:'m29', name:'Hazelnut Spread',           category:'Chocolate & Baking Products',   unit:'jar',   img:'Product Photos/Hazelnut Spread.jfif' },
   { id:'m30', name:'Biscoff Spread',            category:'Chocolate & Baking Products',   unit:'jar',   img:'Product Photos/Biscoff Spread.jfif' },
   { id:'m31', name:'Biscuits',                  category:'Chocolate & Baking Products',   unit:'pack',  img:'Product Photos/Biscuits.jfif' },
+  // Sugar & Dairy Extras
+  { id:'m32', name:'Mawana Icing Sugar',          category:'Baking Ingredients',            unit:'kg',    img:'Product Photos/Mawana Icing Sugar.jpg' },
+  { id:'m33', name:'Mawana Brown Sugar',          category:'Baking Ingredients',            unit:'kg',    img:'Product Photos/Mawana Brown Sugar.jpg' },
+  { id:'m34', name:'Cream Cheese',                category:'Dairy Products',                unit:'pack',  img:'Product Photos/Cream Cheese.webp' },
 ];
 
 const DEFAULT_PRODUCTS = [
   // Healthy Cakes
-  ...['Mawa Badam','Rich Beet Root','Honey Oat','Coffee Caramel','Cocoa Walnut Chia Seed','Chocolate Walnut','Banana Walnut','Bundt Chocolate','Wheat & Jaggery','Dates & Walnut','Rose Pistachio','Dry Fruit Mix','Orange, Carrot & Fig'].map((name,i)=>({
+  ...['Mawa Badam','Rich Beet Root','Honey Oat','Coffee Caramel','Cocoa Walnut Chia Seed','Vanilla Chocolate Marble','Chocolate Walnut','Banana Walnut','Bundt Chocolate','Wheat & Jaggery','Dates & Walnut','Rose Pistachio','Dry Fruit Mix','Orange, Carrot & Fig'].map((name,i)=>({
     id:`p${i+1}`, name, category:'Healthy Cakes', emoji:'🎂', description:`Freshly baked ${name} healthy cake, made with wholesome ingredients.`,
     prices:{ '500gm':0, '1kg':0, '2kg':0 }, hasSize:true
   })),
