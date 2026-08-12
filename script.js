@@ -105,17 +105,24 @@ const app = (() => {
     activePage: 'dashboard',
     activeMaterialCategory: 'All',
     activeProductCategory: 'All',
-    dashRange: 'month',
-    salesRange: 'month',
-    financeRange: 'month',
-    customFrom: null,
-    customTo: null,
+    dashRange: 'all',
+    salesRange: 'all',
+    financeRange: 'all',
+    customRanges: {
+      dash: { from: null, to: null },
+      sales: { from: null, to: null },
+      finance: { from: null, to: null },
+    },
     theme: 'light',
     currentPurchaseMat: null,
     charts: {},
     pendingConfirm: null,
     currentProductDetail: null,
   };
+
+  const LIST_PAGE_SIZE = 10;
+  const listExpanded = {};
+  const listDataCache = {};
 
   // ─── INIT ─────────────────────────────────────────────────────────
 
@@ -195,42 +202,10 @@ const app = (() => {
     document.getElementById('themeToggle').addEventListener('click', () => applyTheme(state.theme === 'dark' ? 'light' : 'dark'));
     document.getElementById('themeToggleSettings').addEventListener('change', e => applyTheme(e.target.checked ? 'dark' : 'light'));
 
-    // Dashboard filter
-    document.querySelectorAll('.filter-btn:not([data-ctx])').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn:not([data-ctx])').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.dashRange = btn.dataset.range;
-        updateDashboard();
-      });
-    });
-
-    // Sales filter
-    document.querySelectorAll('.filter-btn[data-ctx="sales"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn[data-ctx="sales"]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.salesRange = btn.dataset.range;
-        updateSales();
-      });
-    });
-
-    // Finance filter
-    document.querySelectorAll('.filter-btn[data-ctx="finance"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn[data-ctx="finance"]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.financeRange = btn.dataset.range;
-        document.getElementById('customDatePicker').style.display = btn.dataset.range === 'custom' ? 'flex' : 'none';
-        if (btn.dataset.range !== 'custom') updateFinance();
-      });
-    });
-
-    document.getElementById('applyCustomDate').addEventListener('click', () => {
-      state.customFrom = document.getElementById('customFrom').value;
-      state.customTo = document.getElementById('customTo').value;
-      updateFinance();
-    });
+    // Filter bars (dashboard / sales / finance) — all share the same behavior
+    setupFilterContext('dash', 'dashRange', 'customDatePickerDash', 'customFromDash', 'customToDash', 'applyCustomDateDash', updateDashboard);
+    setupFilterContext('sales', 'salesRange', 'customDatePickerSales', 'customFromSales', 'customToSales', 'applyCustomDateSales', updateSales);
+    setupFilterContext('finance', 'financeRange', 'customDatePicker', 'customFrom', 'customTo', 'applyCustomDate', updateFinance);
 
     // Cart
     document.getElementById('cartFab').addEventListener('click', openCartModal);
@@ -249,7 +224,7 @@ const app = (() => {
     document.getElementById('addToCartBtn').addEventListener('click', addToCart);
 
     // Sale modal
-    document.getElementById('newSaleBtn').addEventListener('click', () => openModal('saleModal'));
+    document.getElementById('newSaleBtn').addEventListener('click', openSaleModal);
     document.getElementById('closeSaleModal').addEventListener('click', () => closeModal('saleModal'));
     document.getElementById('salePrice').addEventListener('input', updateSaleTotalPreview);
     document.getElementById('saleQty').addEventListener('input', updateSaleTotalPreview);
@@ -268,7 +243,7 @@ const app = (() => {
       closeModal('productDetailModal');
       const p = state.currentProductDetail;
       if (p) {
-        openModal('saleModal');
+        openSaleModal();
         setTimeout(() => {
           const sc = document.getElementById('saleCategory');
           sc.value = p.category;
@@ -319,6 +294,27 @@ const app = (() => {
       closeModal('confirmModal');
       if (state.pendingConfirm) { state.pendingConfirm(); state.pendingConfirm = null; }
     });
+  }
+
+  function setupFilterContext(ctx, rangeKey, pickerId, fromId, toId, applyId, updateFn) {
+    const picker = document.getElementById(pickerId);
+    document.querySelectorAll(`.filter-btn[data-ctx="${ctx}"]`).forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll(`.filter-btn[data-ctx="${ctx}"]`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state[rangeKey] = btn.dataset.range;
+        if (picker) picker.style.display = btn.dataset.range === 'custom' ? 'flex' : 'none';
+        if (btn.dataset.range !== 'custom') updateFn();
+      });
+    });
+    const applyBtn = document.getElementById(applyId);
+    if (applyBtn) {
+      applyBtn.addEventListener('click', () => {
+        state.customRanges[ctx].from = document.getElementById(fromId).value;
+        state.customRanges[ctx].to = document.getElementById(toId).value;
+        updateFn();
+      });
+    }
   }
 
   // ─── MODALS ───────────────────────────────────────────────────────
@@ -633,6 +629,11 @@ const app = (() => {
     updateSaleTotalPreview();
   }
 
+  function openSaleModal() {
+    document.getElementById('saleDate').value = new Date().toISOString().slice(0,10);
+    openModal('saleModal');
+  }
+
   function updateSaleTotalPreview() {
     const price = parseFloat(document.getElementById('salePrice').value) || 0;
     const qty = parseFloat(document.getElementById('saleQty').value) || 0;
@@ -642,9 +643,11 @@ const app = (() => {
   function recordSale() {
     const category = document.getElementById('saleCategory').value;
     const productId = document.getElementById('saleProduct').value;
+    const dateStr = document.getElementById('saleDate').value;
     const unitPrice = parseFloat(document.getElementById('salePrice').value);
     const qty = parseFloat(document.getElementById('saleQty').value);
     if (!productId) { showToast('Select a product'); return; }
+    if (!dateStr) { showToast('Select a date'); return; }
     if (!unitPrice || unitPrice <= 0) { showToast('Enter selling price'); return; }
     if (!qty || qty <= 0) { showToast('Enter quantity'); return; }
 
@@ -659,7 +662,7 @@ const app = (() => {
 
     const sale = {
       id: `sal_${Date.now()}`,
-      date: new Date().toISOString(),
+      date: combineDateWithNow(dateStr),
       productId,
       productName: p ? p.name : 'Unknown',
       category,
@@ -673,6 +676,7 @@ const app = (() => {
     closeModal('saleModal');
     document.getElementById('saleCategory').value = '';
     document.getElementById('saleProduct').innerHTML = '<option value="">Select product…</option>';
+    document.getElementById('saleDate').value = new Date().toISOString().slice(0,10);
     document.getElementById('salePrice').value = '';
     document.getElementById('saleQty').value = '1';
     document.getElementById('saleSizeGroup').style.display = 'none';
@@ -691,6 +695,7 @@ const app = (() => {
     if (!sale) return;
     editingSaleId = saleId;
     document.getElementById('editSaleProductName').value = `${sale.productName}${sale.size ? ' ('+formatSize(sale.size)+')' : ''}`;
+    document.getElementById('editSaleDate').value = sale.date.slice(0,10);
     document.getElementById('editSalePrice').value = sale.unitPrice;
     document.getElementById('editSaleQty').value = sale.qty;
     updateEditSaleTotalPreview();
@@ -706,10 +711,13 @@ const app = (() => {
   function saveEditSale() {
     const sale = state.sales.find(s => s.id === editingSaleId);
     if (!sale) return;
+    const dateStr = document.getElementById('editSaleDate').value;
     const unitPrice = parseFloat(document.getElementById('editSalePrice').value);
     const qty = parseFloat(document.getElementById('editSaleQty').value);
+    if (!dateStr) { showToast('Select a date'); return; }
     if (!unitPrice || unitPrice <= 0) { showToast('Enter selling price'); return; }
     if (!qty || qty <= 0) { showToast('Enter quantity'); return; }
+    sale.date = combineDateWithNow(dateStr, sale.date);
     sale.unitPrice = unitPrice;
     sale.qty = qty;
     sale.total = unitPrice * qty;
@@ -739,7 +747,7 @@ const app = (() => {
   }
 
   function updateSales() {
-    const { from, to } = getDateRange(state.salesRange);
+    const { from, to } = getDateRange(state.salesRange, state.customRanges.sales.from, state.customRanges.sales.to);
     const filtered = filterByDate(state.sales, from, to);
     const revenue = filtered.reduce((s, x) => s + x.total, 0);
     const items = filtered.reduce((s, x) => s + x.qty, 0);
@@ -753,14 +761,8 @@ const app = (() => {
   }
 
   function renderSalesList(elId, filtered) {
-    const list = document.getElementById(elId);
-    if (!list) return;
-    if (!filtered.length) {
-      list.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><p>No sales in this period</p></div>`;
-      return;
-    }
-    const sorted = [...filtered].sort((a,b) => new Date(b.date)-new Date(a.date));
-    list.innerHTML = sorted.map(s => `
+    listDataCache[elId] = filtered;
+    renderTransactionList(elId, filtered, '📊', 'No sales in this period', s => `
       <div class="transaction-item">
         <div class="tx-icon sale"><i class="fa-solid fa-bag-shopping"></i></div>
         <div class="tx-body">
@@ -769,13 +771,43 @@ const app = (() => {
         </div>
         <span class="tx-amount credit">+₹${s.total.toFixed(0)}</span>
         <button class="tx-edit-btn" onclick="app.openEditSale('${s.id}')" title="Edit sale"><i class="fa-solid fa-pen"></i></button>
-      </div>`).join('');
+      </div>`);
+  }
+
+  function renderTransactionList(elId, items, emptyIcon, emptyText, renderItemFn) {
+    const list = document.getElementById(elId);
+    if (!list) return;
+    if (!items.length) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">${emptyIcon}</div><p>${emptyText}</p></div>`;
+      return;
+    }
+    const sorted = [...items].sort((a,b) => new Date(b.date)-new Date(a.date));
+    const expanded = !!listExpanded[elId];
+    const visible = expanded ? sorted : sorted.slice(0, LIST_PAGE_SIZE);
+    let html = visible.map(renderItemFn).join('');
+    if (sorted.length > LIST_PAGE_SIZE) {
+      html += expanded
+        ? `<button class="show-more-btn" onclick="app.toggleListExpand('${elId}')">Show Less</button>`
+        : `<button class="show-more-btn" onclick="app.toggleListExpand('${elId}')">Show More (${sorted.length - LIST_PAGE_SIZE} more)</button>`;
+    }
+    list.innerHTML = html;
+  }
+
+  function toggleListExpand(elId) {
+    listExpanded[elId] = !listExpanded[elId];
+    const data = listDataCache[elId];
+    if (!data) return;
+    if (elId.toLowerCase().includes('purchase')) {
+      renderPurchaseHistory(elId, data);
+    } else {
+      renderSalesList(elId, data);
+    }
   }
 
   // ─── FINANCE ──────────────────────────────────────────────────────
 
   function updateFinance() {
-    const { from, to } = getDateRange(state.financeRange, state.customFrom, state.customTo);
+    const { from, to } = getDateRange(state.financeRange, state.customRanges.finance.from, state.customRanges.finance.to);
     const filteredSales = filterByDate(state.sales, from, to);
     const filteredPurchases = filterByDate(state.purchases, from, to);
 
@@ -796,14 +828,8 @@ const app = (() => {
   }
 
   function renderPurchaseHistory(elId, purchases) {
-    const list = document.getElementById(elId);
-    if (!list) return;
-    if (!purchases.length) {
-      list.innerHTML = `<div class="empty-state"><div class="empty-icon">🛒</div><p>No purchases in this period</p></div>`;
-      return;
-    }
-    const sorted = [...purchases].sort((a,b) => new Date(b.date)-new Date(a.date));
-    list.innerHTML = sorted.map(p => `
+    listDataCache[elId] = purchases;
+    renderTransactionList(elId, purchases, '🛒', 'No purchases in this period', p => `
       <div class="transaction-item">
         <div class="tx-icon purchase"><i class="fa-solid fa-cart-shopping"></i></div>
         <div class="tx-body">
@@ -811,13 +837,13 @@ const app = (() => {
           <div class="tx-meta">${p.items.length} item(s) · ${formatDateTime(p.date)}</div>
         </div>
         <span class="tx-amount debit">-₹${p.total.toFixed(0)}</span>
-      </div>`).join('');
+      </div>`);
   }
 
   // ─── DASHBOARD ────────────────────────────────────────────────────
 
   function updateDashboard() {
-    const { from, to } = getDateRange(state.dashRange);
+    const { from, to } = getDateRange(state.dashRange, state.customRanges.dash.from, state.customRanges.dash.to);
     const filteredSales = filterByDate(state.sales, from, to);
     const filteredPurchases = filterByDate(state.purchases, from, to);
 
@@ -972,8 +998,15 @@ const app = (() => {
       case 'quarter':   return { from: new Date(now.getFullYear(),now.getMonth()-2,1), to: new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59) };
       case 'year':      return { from: new Date(now.getFullYear(),0,1), to: new Date(now.getFullYear(),11,31,23,59,59) };
       case 'custom':    return { from: customFrom ? new Date(customFrom) : new Date(0), to: customTo ? new Date(customTo+'T23:59:59') : new Date() };
+      case 'all':       return { from: new Date(0), to: new Date() };
       default:          return { from: new Date(0), to: new Date() };
     }
+  }
+
+  function combineDateWithNow(dateStr, baseDate) {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const t = baseDate ? new Date(baseDate) : new Date();
+    return new Date(y, m - 1, d, t.getHours(), t.getMinutes(), t.getSeconds(), t.getMilliseconds()).toISOString();
   }
 
   function filterByDate(items, from, to) {
@@ -1153,6 +1186,7 @@ const app = (() => {
     onSaleProductChange,
     onSaleSizeChange,
     openEditSale,
+    toggleListExpand,
   };
 
 })();

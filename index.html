@@ -46,11 +46,23 @@
         <span class="page-date" id="dashDate"></span>
       </div>
 
-      <div class="filter-bar">
-        <button class="filter-btn" data-range="today">Today</button>
-        <button class="filter-btn" data-range="week">7 Days</button>
-        <button class="filter-btn active" data-range="month">Month</button>
-        <button class="filter-btn" data-range="all">All Time</button>
+      <div class="filter-bar" id="dashFilters">
+        <button class="filter-btn active" data-range="all" data-ctx="dash">All Time</button>
+        <button class="filter-btn" data-range="today" data-ctx="dash">Today</button>
+        <button class="filter-btn" data-range="yesterday" data-ctx="dash">Yesterday</button>
+        <button class="filter-btn" data-range="week" data-ctx="dash">7 Days</button>
+        <button class="filter-btn" data-range="month" data-ctx="dash">This Month</button>
+        <button class="filter-btn" data-range="lastmonth" data-ctx="dash">Last Month</button>
+        <button class="filter-btn" data-range="quarter" data-ctx="dash">Quarterly</button>
+        <button class="filter-btn" data-range="year" data-ctx="dash">Yearly</button>
+        <button class="filter-btn" data-range="custom" data-ctx="dash">Custom</button>
+      </div>
+
+      <div class="date-range-picker" id="customDatePickerDash" style="display:none">
+        <input type="date" id="customFromDash" />
+        <span>to</span>
+        <input type="date" id="customToDash" />
+        <button class="btn-primary sm" id="applyCustomDateDash">Apply</button>
       </div>
 
       <div class="summary-grid" id="dashSummary">
@@ -169,11 +181,23 @@
         <button class="btn-primary sm" id="newSaleBtn"><i class="fa-solid fa-plus"></i> New Sale</button>
       </div>
 
-      <div class="filter-bar">
+      <div class="filter-bar" id="salesFilters">
+        <button class="filter-btn active" data-range="all" data-ctx="sales">All Time</button>
         <button class="filter-btn" data-range="today" data-ctx="sales">Today</button>
+        <button class="filter-btn" data-range="yesterday" data-ctx="sales">Yesterday</button>
         <button class="filter-btn" data-range="week" data-ctx="sales">7 Days</button>
-        <button class="filter-btn active" data-range="month" data-ctx="sales">Month</button>
-        <button class="filter-btn" data-range="all" data-ctx="sales">All</button>
+        <button class="filter-btn" data-range="month" data-ctx="sales">This Month</button>
+        <button class="filter-btn" data-range="lastmonth" data-ctx="sales">Last Month</button>
+        <button class="filter-btn" data-range="quarter" data-ctx="sales">Quarterly</button>
+        <button class="filter-btn" data-range="year" data-ctx="sales">Yearly</button>
+        <button class="filter-btn" data-range="custom" data-ctx="sales">Custom</button>
+      </div>
+
+      <div class="date-range-picker" id="customDatePickerSales" style="display:none">
+        <input type="date" id="customFromSales" />
+        <span>to</span>
+        <input type="date" id="customToSales" />
+        <button class="btn-primary sm" id="applyCustomDateSales">Apply</button>
       </div>
 
       <div class="summary-grid compact" id="salesSummary">
@@ -207,10 +231,11 @@
       </div>
 
       <div class="filter-bar scrollable" id="financeFilters">
+        <button class="filter-btn active" data-range="all" data-ctx="finance">All Time</button>
         <button class="filter-btn" data-range="today" data-ctx="finance">Today</button>
         <button class="filter-btn" data-range="yesterday" data-ctx="finance">Yesterday</button>
         <button class="filter-btn" data-range="week" data-ctx="finance">7 Days</button>
-        <button class="filter-btn active" data-range="month" data-ctx="finance">This Month</button>
+        <button class="filter-btn" data-range="month" data-ctx="finance">This Month</button>
         <button class="filter-btn" data-range="lastmonth" data-ctx="finance">Last Month</button>
         <button class="filter-btn" data-range="quarter" data-ctx="finance">Quarterly</button>
         <button class="filter-btn" data-range="year" data-ctx="finance">Yearly</button>
@@ -371,7 +396,7 @@
           <div>
             <strong>Rakhi's Homemade</strong>
             <p>Bakery Business Management System</p>
-            <small>v1.0 · Local Storage · Works Offline</small>
+            <small>v1.0.2 · Local Storage · Works Offline</small>
           </div>
         </div>
       </div>
@@ -528,6 +553,10 @@
         </select>
       </div>
       <div class="form-group">
+        <label>Date *</label>
+        <input type="date" id="saleDate" />
+      </div>
+      <div class="form-group">
         <label>Selling Price (₹) *</label>
         <input type="number" id="salePrice" placeholder="0.00" min="0" step="0.01" />
       </div>
@@ -557,6 +586,10 @@
       <div class="form-group">
         <label>Product</label>
         <input type="text" id="editSaleProductName" disabled />
+      </div>
+      <div class="form-group">
+        <label>Date *</label>
+        <input type="date" id="editSaleDate" />
       </div>
       <div class="form-group">
         <label>Selling Price (₹) *</label>

@@ -426,6 +426,21 @@ canvas { max-width: 100%; }
 /* ===== TRANSACTION LIST ===== */
 .transaction-list { display: flex; flex-direction: column; gap: 8px; }
 
+.show-more-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 2px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border);
+  background: var(--surface-2);
+  color: var(--brand);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.show-more-btn:hover { background: var(--border); }
+
 .transaction-item {
   background: var(--surface);
   border: 1px solid var(--border);
